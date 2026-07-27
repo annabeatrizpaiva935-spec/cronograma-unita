@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cronograma — Consultoria de Marketing Unitá</title>
+<style>
+  :root {
+    --ink: #10233A;
+    --ink-soft: #2A3F58;
+    --gold: #AD8A46;
+    --gold-soft: #D9C9A3;
+    --amber: #B8763A;
+    --amber-soft: #F0DCC4;
+    --cream: #FBF8F2;
+    --panel: #F1ECE1;
+    --charcoal: #3A3A38;
+    --muted: #8B8577;
+    --line: #DDD5C3;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--charcoal);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 20px 90px;
+  }
+
+  /* Header */
+  .masthead {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 4px;
+    padding: 34px 32px 28px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::after {
+    content: "";
+    position: absolute;
+    top: 0; right: 0;
+    width: 6px; height: 100%;
+    background: var(--gold);
+  }
+  .kicker {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: 28px;
+    margin: 0 0 4px;
+    font-weight: 700;
+  }
+  .subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    color: #C7D0DA;
+    font-size: 15px;
+    margin-bottom: 22px;
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.14);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 13px;
+    color: var(--gold-soft);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meta-line {
+    margin-top: 16px;
+    font-size: 12.5px;
+    color: #A9B4C0;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  /* Phase */
+  .phase {
+    margin-bottom: 34px;
+  }
+  .phase-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .phase-title {
+    font-family: var(--serif);
+    font-size: 19px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .phase-sub {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* Month card */
+  .month {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .month-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px 12px;
+  }
+  .month-num {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--gold);
+    font-weight: 700;
+    min-width: 30px;
+  }
+  .month-title-block { flex: 1; }
+  .month-title {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .month-tag {
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .current-badge {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--panel);
+    color: var(--ink);
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--gold-soft);
+    white-space: nowrap;
+  }
+  .stamp {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    transform: rotate(-8deg);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .stamp.show {
+    opacity: 1;
+  }
+
+  .items {
+    list-style: none;
+    margin: 0;
+    padding: 0 18px 16px;
+  }
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+  }
+  .item:first-child { border-top: none; }
+  .item.progress {
+    background: linear-gradient(90deg, rgba(184,118,58,0.06), transparent 40%);
+  }
+
+  .box {
+    width: 17px; height: 17px;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+    user-select: none;
+  }
+  .box.checked {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+  .box.progress {
+    background: var(--amber-soft);
+    border-color: var(--amber);
+  }
+  .box svg { display: none; width: 11px; height: 11px; }
+  .box.checked svg { display: block; }
+  .box-dot {
+    display: none;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+  .box.progress .box-dot { display: block; }
+
+  .item-body { flex: 1; min-width: 0; }
+
+  .item-text-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .item-text {
+    font-size: 13.8px;
+    line-height: 1.45;
+    color: var(--charcoal);
+    transition: color 0.15s ease;
+  }
+  .item.done .item-text {
+    color: var(--muted);
+    text-decoration: line-through;
+    text-decoration-color: var(--gold-soft);
+  }
+
+  .status-tag {
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--amber);
+    white-space: nowrap;
+  }
+
+  .obs-field {
+    width: 100%;
+    margin-top: 6px;
+    font-size: 12.5px;
+    font-family: var(--sans);
+    padding: 7px 9px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--cream);
+    color: var(--charcoal);
+    resize: vertical;
+    min-height: 32px;
+    line-height: 1.4;
+  }
+  .obs-field::placeholder { color: var(--muted); }
+  .obs-field:focus {
+    outline: none;
+    border-color: var(--gold-soft);
+    background: #fff;
+  }
+
+  .month-progress {
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .save-indicator {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: var(--ink);
+    color: var(--gold-soft);
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  .backup-box {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px 18px;
+    margin-top: 24px;
+  }
+  .backup-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .backup-hint {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .backup-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .backup-btn {
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 3px;
+    border: 1px solid var(--ink-soft);
+    background: #fff;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .backup-btn:active { background: var(--panel); }
+  .backup-textarea {
+    width: 100%;
+    margin-top: 10px;
+    font-size: 11px;
+    font-family: monospace;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    resize: vertical;
+    min-height: 60px;
+    background: #fff;
+    color: var(--charcoal);
+    display: none;
+  }
+  .backup-textarea.show { display: block; }
+  .backup-msg {
+    font-size: 11px;
+    color: var(--gold);
+    margin-top: 8px;
+    min-height: 14px;
+  }
+
+  .legend {
+    font-size: 11px;
+    color: var(--muted);
+    margin: -14px 0 26px;
+    padding: 0 2px;
+  }
+  .legend b { color: var(--charcoal); }
+
+  footer {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 30px;
+  }
+
+  .loading, .error-box {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 24px 12px 70px; }
+    .masthead { padding: 26px 20px 22px; }
+    h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="loading">Carregando cronograma…</div>
+</div>
+<div class="save-indicator" id="saveIndicator">progresso salvo</div>
+
+<script>
+const STORAGE_KEY = 'cronograma-unita-v2';
+const START_DATE = new Date('2026-07-20');
+
+const PHASES = [
+  {
+    id: 'fase1',
+    title: 'Fase 1 — Estruturação da base',
+    sub: '4 meses · R$ 20.000',
+    months: [
+      {
+        title: 'Diagnóstico e estudo de mercado',
+        tag: 'Mês 1',
+        items: [
+          'Diagnóstico de marketing atual',
+          'Diagnóstico comercial atual',
+          'Diagnóstico de posicionamento atual',
+          'Diagnóstico de produto',
+          'Diagnóstico de comunicação atual',
+          'Estudo de mercado: clientes atuais',
+          'Estudo de mercado: prospects',
+          'Estudo de mercado: concorrência direta e indireta',
+          'Estudo de mercado: alternativas usadas hoje pelo cliente',
+          'Início do processo de seleção do profissional dedicado'
+        ]
+      },
+      {
+        title: 'Posicionamento e narrativa',
+        tag: 'Mês 2',
+        items: [
+          'Definição de segmentos prioritários',
+          'Definição de ICPs',
+          'Definição de personas',
+          'Documento de posicionamento',
+          'Narrativa premium: o que vendemos',
+          'Narrativa premium: para quem vendemos',
+          'Narrativa premium: por que somos diferentes',
+          'Narrativa premium: qual valor geramos'
+        ]
+      },
+      {
+        title: 'Proposta de valor e funil',
+        tag: 'Mês 3',
+        items: [
+          'Proposta de valor',
+          'Mensagens-chave para TI',
+          'Mensagens-chave para RH',
+          'Mensagens-chave para Operações',
+          'Mensagens-chave para Diretoria, CFO, CIO e CEO',
+          'Arquitetura das ofertas (sem definição de precificação)',
+          'Funil: definição de lead, MQL, SQL e oportunidade',
+          'Funil: rotina de passagem entre marketing e comercial'
+        ]
+      },
+      {
+        title: 'Processos, indicadores e contratação',
+        tag: 'Mês 4',
+        items: [
+          'Rotina semanal da área de marketing',
+          'Papéis e responsabilidades',
+          'Modelo de briefing',
+          'Calendário de marketing',
+          'Mapeamento de fornecedores',
+          'Modelo de relatório mensal',
+          'Indicadores de acompanhamento',
+          'Dashboard básico',
+          'Conclusão da contratação do profissional dedicado',
+          'Onboarding do profissional dedicado',
+          'Validação formal da Fase 1'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'fase2',
+    title: 'Fase 2 — Consolidação e autonomia',
+    sub: '5 meses · R$ 15.000',
+    months: [
+      {
+        title: 'Acompanhamento inicial',
+        tag: 'Mês 5',
+        items: [
+          'Reunião periódica com o profissional dedicado',
+          'Reunião executiva mensal com a Unitá',
+          'Revisão dos indicadores de marketing',
+          'Revisão dos indicadores comerciais'
+        ]
+      },
+      {
+        title: 'Eventos e canais',
+        tag: 'Mês 6',
+        items: [
+          'Playbook de eventos: etapa antes',
+          'Playbook de eventos: etapa durante',
+          'Playbook de eventos: etapa depois',
+          'Critérios de qualificação e follow-up',
+          'Apoio na evolução das campanhas',
+          'Apoio na evolução dos canais de aquisição'
+        ]
+      },
+      {
+        title: 'Ajustes de rota',
+        tag: 'Mês 7',
+        items: [
+          'Ajustes estratégicos com base nos indicadores',
+          'Otimização de processos já implantados',
+          'Apoio na revisão de materiais comerciais existentes'
+        ]
+      },
+      {
+        title: 'Apoio a eventos',
+        tag: 'Mês 8',
+        items: [
+          'Apoio na preparação de eventos da Unitá',
+          'Apoio na análise de resultados dos eventos',
+          'Relatório mensal: entregas realizadas',
+          'Relatório mensal: aprendizados e pendências'
+        ]
+      },
+      {
+        title: 'Consolidação e transição',
+        tag: 'Mês 9',
+        items: [
+          'Revisão final do planejamento',
+          'Identificação de novas oportunidades de crescimento',
+          'Consolidação da área de marketing',
+          'Plano de transição para autonomia total',
+          'Relatório final do projeto'
+        ]
+      }
+    ]
+  }
+];
+
+// Estado inicial semeado a pedido da Anna. Só é aplicado quando ainda não
+// existe progresso salvo para a respectiva chave (não sobrescreve edições já feitas).
+const INITIAL_STATE = {
+  'fase1-0-0': { status: 'progress', obs: 'Pendência aguardando acesso da Meta' },
+  'fase1-0-1': { status: 'progress', obs: 'Aguardando inserção de filtro e exportação de listas no CRM' },
+  'fase1-0-4': { status: 'progress', obs: '' },
+  'fase1-0-7': { status: 'progress', obs: 'Recebido informações — quinta, 23/07' },
+  'fase1-0-9': { status: 'progress', obs: '' }
+};
+
+function monthRange(index) {
+  const start = new Date(START_DATE);
+  start.setMonth(start.getMonth() + index);
+  const end = new Date(start);
+  end.setMonth(end.getMonth() + 1);
+  end.setDate(end.getDate() - 1);
+  return { start, end };
+}
+
+function isCurrentMonth(index) {
+  const { start, end } = monthRange(index);
+  const now = new Date();
+  return now >= start && now <= end;
+}
+
+function fmtDate(d) {
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+}
+
+const checkIconSVG = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+let state = {}; // { [itemKey]: { status: 'pending'|'progress'|'done', obs: string } }
+let saveTimer = null;
+let obsDebounce = {};
+
+function emptyItemState() {
+  return { status: 'pending', obs: '' };
+}
+
+function getItemState(key) {
+  return state[key] || emptyItemState();
+}
+
+// Migra formatos antigos (booleano = concluído) para o novo formato com status/obs.
+function migrate(raw) {
+  const migrated = {};
+  Object.keys(raw || {}).forEach(key => {
+    const v = raw[key];
+    if (typeof v === 'boolean') {
+      migrated[key] = { status: v ? 'done' : 'pending', obs: '' };
+    } else if (v && typeof v === 'object') {
+      migrated[key] = { status: v.status || 'pending', obs: v.obs || '' };
+    }
+  });
+  return migrated;
+}
+
+// Versão para publicação (GitHub Pages / hospedagem própria): usa localStorage do
+// navegador, que salva automaticamente neste dispositivo/navegador sem precisar de conta.
+async function loadState() {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (raw) return migrate(JSON.parse(raw));
+    return {};
+  } catch (e) {
+    return {};
+  }
+}
+
+async function saveState() {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showSaveIndicator();
+  } catch (e) {
+    console.warn('Não foi possível salvar o progresso agora. As marcações continuam válidas nesta sessão.', e);
+  }
+}
+
+function showSaveIndicator() {
+  const el = document.getElementById('saveIndicator');
+  if (!el) return;
+  el.classList.add('show');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => el.classList.remove('show'), 1200);
+}
+
+function itemKey(phaseId, monthIdx, itemIdx) {
+  return phaseId + '-' + monthIdx + '-' + itemIdx;
+}
+
+function cycleStatus(s) {
+  if (s === 'pending') return 'progress';
+  if (s === 'progress') return 'done';
+  return 'pending';
+}
+
+function computeOverall() {
+  let total = 0, done = 0, progress = 0;
+  PHASES.forEach(phase => {
+    phase.months.forEach((m, mi) => {
+      m.items.forEach((it, ii) => {
+        total++;
+        const st = getItemState(itemKey(phase.id, mi, ii)).status;
+        if (st === 'done') done++;
+        else if (st === 'progress') progress++;
+      });
+    });
+  });
+  return { total, done, progress };
+}
+
+function computeMonthProgress(phaseId, monthIdx, itemCount) {
+  let done = 0, progress = 0;
+  for (let i = 0; i < itemCount; i++) {
+    const st = getItemState(itemKey(phaseId, monthIdx, i)).status;
+    if (st === 'done') done++;
+    else if (st === 'progress') progress++;
+  }
+  return { done, progress };
+}
+
+function render() {
+  const app = document.getElementById('app');
+  let globalMonthCounter = 0;
+  const { total, done, progress } = computeOverall();
+  const pct = total ? Math.round((done / total) * 100) : 0;
+
+  let html = '';
+
+  html += '<div class="masthead">';
+  html += '<div class="kicker">Consultoria de Marketing · Unitá Soluções Digitais</div>';
+  html += '<h1>Cronograma do Projeto</h1>';
+  html += '<div class="subtitle">Acompanhamento das entregas, mês a mês</div>';
+  html += '<div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
+  html += '<div class="progress-label">' + done + ' de ' + total + ' concluídos (' + pct + '%) · ' + progress + ' em andamento</div></div>';
+  html += '<div class="meta-line"><span>Início: 20/07/2026</span><span>Término previsto: 20/04/2027</span></div>';
+  html += '</div>';
+
+  html += '<div class="legend"><b>Clique no quadrado</b> para alternar entre pendente, em andamento e concluído. Use o campo abaixo de cada item para registrar observações — salva automaticamente.</div>';
+
+  PHASES.forEach(phase => {
+    let phaseTotal = 0, phaseDone = 0, phaseProgress = 0;
+    phase.months.forEach((m, mi) => {
+      phaseTotal += m.items.length;
+      const mp = computeMonthProgress(phase.id, mi, m.items.length);
+      phaseDone += mp.done;
+      phaseProgress += mp.progress;
+    });
+    const phasePct = phaseTotal ? Math.round((phaseDone / phaseTotal) * 100) : 0;
+
+    html += '<div class="phase">';
+    html += '<div class="phase-header"><div class="phase-title">' + phase.title + '</div><div class="phase-sub">' + phase.sub + ' · <strong>' + phasePct + '%</strong> concluído · ' + phaseProgress + ' em andamento</div></div>';
+
+    phase.months.forEach((m, mi) => {
+      const isCurrent = isCurrentMonth(globalMonthCounter);
+      const range = monthRange(globalMonthCounter);
+      globalMonthCounter++;
+      const mp = computeMonthProgress(phase.id, mi, m.items.length);
+      const allDone = mp.done === m.items.length;
+      const monthPct = m.items.length ? Math.round((mp.done / m.items.length) * 100) : 0;
+
+      html += '<div class="month">';
+      html += '<div class="month-header">';
+      html += '<div class="month-num">' + m.tag.replace('Mês ', '') + '</div>';
+      html += '<div class="month-title-block"><div class="month-title">' + m.title + '</div>';
+      html += '<div class="month-tag">' + fmtDate(range.start) + ' – ' + fmtDate(range.end) + '</div></div>';
+      if (isCurrent) html += '<div class="current-badge">Mês atual</div>';
+      html += '<div class="stamp' + (allDone ? ' show' : '') + '">✓</div>';
+      html += '<div class="month-progress">' + mp.done + '/' + m.items.length + ' · ' + monthPct + '%</div>';
+      html += '</div>';
+
+      html += '<ul class="items">';
+      m.items.forEach((text, ii) => {
+        const key = itemKey(phase.id, mi, ii);
+        const itemState = getItemState(key);
+        const isDone = itemState.status === 'done';
+        const isProgress = itemState.status === 'progress';
+        html += '<li class="item' + (isDone ? ' done' : '') + (isProgress ? ' progress' : '') + '" data-key="' + key + '">';
+        html += '<div class="box' + (isDone ? ' checked' : '') + (isProgress ? ' progress' : '') + '" data-key="' + key + '">' + checkIconSVG + '<div class="box-dot"></div></div>';
+        html += '<div class="item-body">';
+        html += '<div class="item-text-row"><div class="item-text">' + text + '</div>';
+        if (isProgress) html += '<div class="status-tag">Em andamento</div>';
+        html += '</div>';
+        html += '<textarea class="obs-field" data-key="' + key + '" placeholder="Observações...">' + (itemState.obs || '') + '</textarea>';
+        html += '</div>';
+        html += '</li>';
+      });
+      html += '</ul>';
+      html += '</div>';
+    });
+
+    html += '</div>';
+  });
+
+  html += '<div class="backup-box">';
+  html += '<div class="backup-title">Backup manual do progresso</div>';
+  html += '<div class="backup-hint">O progresso já é salvo automaticamente neste navegador. Use estes botões apenas se quiser levar o progresso para outro dispositivo/navegador, ou como backup extra antes de limpar os dados do navegador.</div>';
+  html += '<div class="backup-actions">';
+  html += '<button class="backup-btn" id="btnExport">Copiar código de progresso</button>';
+  html += '<button class="backup-btn" id="btnImport">Colar código de progresso</button>';
+  html += '</div>';
+  html += '<textarea class="backup-textarea" id="backupArea" placeholder="Cole aqui o código de progresso"></textarea>';
+  html += '<div class="backup-msg" id="backupMsg"></div>';
+  html += '</div>';
+
+  html += '<footer>Documento vivo — atualizado conforme o projeto avança</footer>';
+
+  app.innerHTML = html;
+
+  document.querySelectorAll('.box').forEach(el => {
+    el.addEventListener('click', async () => {
+      const key = el.getAttribute('data-key');
+      const cur = getItemState(key);
+      state[key] = { status: cycleStatus(cur.status), obs: cur.obs };
+      await saveState();
+      render();
+    });
+  });
+
+  document.querySelectorAll('.obs-field').forEach(el => {
+    el.addEventListener('input', () => {
+      const key = el.getAttribute('data-key');
+      const cur = getItemState(key);
+      state[key] = { status: cur.status, obs: el.value };
+      clearTimeout(obsDebounce[key]);
+      obsDebounce[key] = setTimeout(async () => {
+        await saveState();
+      }, 600);
+    });
+  });
+
+  const backupMsg = document.getElementById('backupMsg');
+  const backupArea = document.getElementById('backupArea');
+
+  document.getElementById('btnExport').addEventListener('click', async () => {
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+    backupArea.value = code;
+    backupArea.classList.add('show');
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(code);
+      copied = true;
+    } catch (e) {
+      // clipboard indisponível neste ambiente; o código já está visível na caixa de texto
+    }
+    backupMsg.textContent = copied
+      ? 'Código copiado. Guarde-o (ex: em uma nota) para restaurar depois.'
+      : 'Não foi possível copiar automaticamente. Selecione o texto acima e copie manualmente.';
+    if (!copied) {
+      backupArea.focus();
+      backupArea.select();
+    }
+  });
+
+  document.getElementById('btnImport').addEventListener('click', () => {
+    if (!backupArea.classList.contains('show')) {
+      backupArea.classList.add('show');
+      backupArea.value = '';
+      backupArea.focus();
+      backupMsg.textContent = 'Cole o código de progresso na caixa acima e clique em "Colar código de progresso" novamente.';
+      return;
+    }
+    const raw = backupArea.value.trim();
+    if (!raw) {
+      backupMsg.textContent = 'Cole o código de progresso na caixa acima primeiro.';
+      return;
+    }
+    try {
+      const restored = migrate(JSON.parse(decodeURIComponent(escape(atob(raw)))));
+      state = restored || {};
+      saveState();
+      backupMsg.textContent = 'Progresso restaurado com sucesso.';
+      render();
+    } catch (e) {
+      backupMsg.textContent = 'Código inválido. Confira se copiou o texto completo.';
+    }
+  });
+}
+
+async function init() {
+  let loaded = {};
+  try {
+    loaded = await loadState();
+  } catch (e) {
+    loaded = {};
+  }
+  // Aplica o estado inicial semeado apenas onde ainda não há progresso salvo.
+  state = { ...loaded };
+  Object.keys(INITIAL_STATE).forEach(key => {
+    if (!state[key]) {
+      state[key] = INITIAL_STATE[key];
+    }
+  });
+  render();
+  saveState();
+}
+
+init();
+</script>
+</body>
+</html>
