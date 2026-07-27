@@ -225,7 +225,6 @@
     align-items: center;
     justify-content: center;
     transition: background 0.15s ease, border-color 0.15s ease;
-    cursor: pointer;
     user-select: none;
   }
   .box.checked {
@@ -245,6 +244,42 @@
     background: var(--amber);
   }
   .box.progress .box-dot { display: block; }
+
+  .status-selector {
+    display: flex;
+    gap: 6px;
+    margin-top: 7px;
+    flex-wrap: wrap;
+  }
+  .status-btn {
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .status-btn:active { transform: scale(0.97); }
+  .status-btn.active[data-status="pending"] {
+    border-color: var(--ink-soft);
+    color: var(--ink);
+    background: var(--panel);
+  }
+  .status-btn.active[data-status="progress"] {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: var(--amber-soft);
+    font-weight: 600;
+  }
+  .status-btn.active[data-status="done"] {
+    border-color: var(--gold);
+    color: #fff;
+    background: var(--gold);
+    font-weight: 600;
+  }
 
   .item-body { flex: 1; min-width: 0; }
 
@@ -668,7 +703,7 @@ function render() {
   const app = document.getElementById('app');
   let globalMonthCounter = 0;
   const { total, done, progress } = computeOverall();
-  const pct = total ? Math.round((done / total) * 100) : 0;
+  const pct = total ? Math.round(((done + progress * 0.5) / total) * 100) : 0;
 
   let html = '';
 
@@ -681,7 +716,7 @@ function render() {
   html += '<div class="meta-line"><span>Início: 21/07/2026</span><span>Término previsto: 21/04/2027</span></div>';
   html += '</div>';
 
-  html += '<div class="legend"><b>Clique no quadrado</b> para alternar entre pendente, em andamento e concluído. Use o campo abaixo de cada item para registrar observações — salva automaticamente.</div>';
+  html += '<div class="legend"><b>Use os botões abaixo de cada item</b> para marcar como pendente, em andamento ou concluído. O campo de observação salva automaticamente.</div>';
 
   PHASES.forEach(phase => {
     let phaseTotal = 0, phaseDone = 0, phaseProgress = 0;
@@ -691,7 +726,7 @@ function render() {
       phaseDone += mp.done;
       phaseProgress += mp.progress;
     });
-    const phasePct = phaseTotal ? Math.round((phaseDone / phaseTotal) * 100) : 0;
+    const phasePct = phaseTotal ? Math.round(((phaseDone + phaseProgress * 0.5) / phaseTotal) * 100) : 0;
 
     html += '<div class="phase">';
     html += '<div class="phase-header"><div class="phase-title">' + phase.title + '</div><div class="phase-sub">' + phase.sub + ' · <strong>' + phasePct + '%</strong> concluído · ' + phaseProgress + ' em andamento</div></div>';
@@ -702,7 +737,7 @@ function render() {
       globalMonthCounter++;
       const mp = computeMonthProgress(phase.id, mi, m.items.length);
       const allDone = mp.done === m.items.length;
-      const monthPct = m.items.length ? Math.round((mp.done / m.items.length) * 100) : 0;
+      const monthPct = m.items.length ? Math.round(((mp.done + mp.progress * 0.5) / m.items.length) * 100) : 0;
 
       html += '<div class="month">';
       html += '<div class="month-header">';
@@ -721,10 +756,15 @@ function render() {
         const isDone = itemState.status === 'done';
         const isProgress = itemState.status === 'progress';
         html += '<li class="item' + (isDone ? ' done' : '') + (isProgress ? ' progress' : '') + '" data-key="' + key + '">';
-        html += '<div class="box' + (isDone ? ' checked' : '') + (isProgress ? ' progress' : '') + '" data-key="' + key + '">' + checkIconSVG + '<div class="box-dot"></div></div>';
+        html += '<div class="box' + (isDone ? ' checked' : '') + (isProgress ? ' progress' : '') + '">' + checkIconSVG + '<div class="box-dot"></div></div>';
         html += '<div class="item-body">';
         html += '<div class="item-text-row"><div class="item-text">' + text + '</div>';
         if (isProgress) html += '<div class="status-tag">Em andamento</div>';
+        html += '</div>';
+        html += '<div class="status-selector">';
+        html += '<button type="button" class="status-btn' + (itemState.status === 'pending' ? ' active' : '') + '" data-status="pending" data-key="' + key + '">Pendente</button>';
+        html += '<button type="button" class="status-btn' + (itemState.status === 'progress' ? ' active' : '') + '" data-status="progress" data-key="' + key + '">Em andamento</button>';
+        html += '<button type="button" class="status-btn' + (itemState.status === 'done' ? ' active' : '') + '" data-status="done" data-key="' + key + '">Concluído</button>';
         html += '</div>';
         html += '<textarea class="obs-field" data-key="' + key + '" placeholder="Observações...">' + (itemState.obs || '') + '</textarea>';
         html += '</div>';
@@ -752,11 +792,12 @@ function render() {
 
   app.innerHTML = html;
 
-  document.querySelectorAll('.box').forEach(el => {
+  document.querySelectorAll('.status-btn').forEach(el => {
     el.addEventListener('click', async () => {
       const key = el.getAttribute('data-key');
+      const newStatus = el.getAttribute('data-status');
       const cur = getItemState(key);
-      state[key] = { status: cycleStatus(cur.status), obs: cur.obs };
+      state[key] = { status: newStatus, obs: cur.obs };
       await saveState();
       render();
     });
