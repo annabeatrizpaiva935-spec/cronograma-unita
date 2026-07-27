@@ -411,7 +411,7 @@
 
 <script>
 const STORAGE_KEY = 'cronograma-unita-v2';
-const START_DATE = new Date('2026-07-20');
+const START_DATE = new Date(2026, 6, 21); // ano, mês (0-indexado), dia — evita bug de fuso horário da data em string
 
 const PHASES = [
   {
@@ -678,7 +678,7 @@ function render() {
   html += '<div class="subtitle">Acompanhamento das entregas, mês a mês</div>';
   html += '<div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
   html += '<div class="progress-label">' + done + ' de ' + total + ' concluídos (' + pct + '%) · ' + progress + ' em andamento</div></div>';
-  html += '<div class="meta-line"><span>Início: 20/07/2026</span><span>Término previsto: 20/04/2027</span></div>';
+  html += '<div class="meta-line"><span>Início: 21/07/2026</span><span>Término previsto: 21/04/2027</span></div>';
   html += '</div>';
 
   html += '<div class="legend"><b>Clique no quadrado</b> para alternar entre pendente, em andamento e concluído. Use o campo abaixo de cada item para registrar observações — salva automaticamente.</div>';
