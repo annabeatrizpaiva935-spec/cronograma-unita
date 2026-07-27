@@ -146,6 +146,8 @@
   .month-header {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    row-gap: 6px;
     gap: 14px;
     padding: 16px 18px 12px;
   }
@@ -336,6 +338,8 @@
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+    flex: 1 0 100%;
+    text-align: right;
   }
 
   .save-indicator {
@@ -452,7 +456,7 @@ const PHASES = [
   {
     id: 'fase1',
     title: 'Fase 1 — Estruturação da base',
-    sub: '4 meses · R$ 20.000',
+    sub: '4 meses',
     months: [
       {
         title: 'Diagnóstico e estudo de mercado',
@@ -520,7 +524,7 @@ const PHASES = [
   {
     id: 'fase2',
     title: 'Fase 2 — Consolidação e autonomia',
-    sub: '5 meses · R$ 15.000',
+    sub: '5 meses',
     months: [
       {
         title: 'Acompanhamento inicial',
@@ -759,7 +763,6 @@ function render() {
         html += '<div class="box' + (isDone ? ' checked' : '') + (isProgress ? ' progress' : '') + '">' + checkIconSVG + '<div class="box-dot"></div></div>';
         html += '<div class="item-body">';
         html += '<div class="item-text-row"><div class="item-text">' + text + '</div>';
-        if (isProgress) html += '<div class="status-tag">Em andamento</div>';
         html += '</div>';
         html += '<div class="status-selector">';
         html += '<button type="button" class="status-btn' + (itemState.status === 'pending' ? ' active' : '') + '" data-status="pending" data-key="' + key + '">Pendente</button>';
